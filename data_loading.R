@@ -2,10 +2,9 @@
 #Step 0. Downloading dependencies
 #******************************************************************
 library(tidyverse)
+library(plyr)
 library(dplyr)
 library(readr)
-library(plyr)
-library(glue)
 library(lubridate)
 library(ggplot2)
 library(RColorBrewer)
@@ -33,6 +32,3 @@ if(!exists("NEI")) {
   SCC <- readRDS("data/Source_Classification_Code.rds")
   }
 }
-
-str(NEI)
-str(SCC)

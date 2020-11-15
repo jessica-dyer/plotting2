@@ -47,19 +47,55 @@ You must address the following questions and tasks in your exploratory analysis.
 
 ***
 
-```{r setup, include=TRUE}
-source("data_loading")
+```{r setup, include=TRUE, warning=FALSE, message=FALSE}
+# Load data from the data_loading.R file
+# http://rstudio-pubs-static.s3.amazonaws.com/265497_8211f187ae3b44988c4166db0fb0c345.html
+source("data_loading.R")
 ```
 
 ```{r, include=TRUE}
+# Examine the NEI dataset 
 str(NEI)
 ```
 
 ```{r, include=TRUE}
+# Examine the SCC dataset 
 str(SCC)
 ```
 
+*** 
 
+#### Question 1  
+
+1. Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008. 
+
+```{r}
+totalNEI <- aggregate(Emissions ~ year, NEI, sum)
+
+plot1 <- plot(totalNEI$year, totalNEI$Emissions, type = "b", col = "deepskyblue2", 
+     main = expression("Total US "~ PM[2.5]~ "Emissions: 1999-2008"), 
+     ylab = expression("Total US "~   PM[2.5] ~ "Emissions"), 
+     xlab = "Year", 
+     pch = 1)
+```
+
+*** 
+#### Question 2  
+
+2. Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips == "24510") from 1999 to 2008? Use the base plotting system to make a plot answering this question.
+
+```{r}
+baltimore_df <- filter(NEI, fips == "24510")
+
+baltimore_plot_data <- aggregate(Emissions ~ year, baltimore_df, sum)
+
+plot2 <- plot(baltimore_plot_data$year, baltimore_plot_data$Emissions, 
+              col = "deepskyblue2", type = "b",
+              main = expression("Total US "~ PM[2.5]~ "Emissions: 1999-2008 in Baltimore"), 
+              ylab = expression("Total US "~   PM[2.5] ~ "Emissions"), 
+              xlab = "Year", 
+              pch = 1)
+```
 
 
 
