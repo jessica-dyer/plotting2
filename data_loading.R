@@ -32,3 +32,21 @@ if(!exists("NEI")) {
   SCC <- readRDS("data/Source_Classification_Code.rds")
   }
 }
+
+theme(
+  # Change axis lines
+  axis.line = element_line(),
+  
+  # Change axis ticks text labels: font color, size and face
+  axis.text = element_text(),       # Change tick labels for all axes
+  axis.text.x = element_text(),     # Change x axis tick labels only
+  axis.text.x.top = element_text(), # x axis tick labels on top axis
+  axis.text.y = element_text(),     # Change y axis tick labels only
+  axis.text.y.right = element_text(),# y  axis tick labels on top axis
+  
+  # Change axis ticks line: font color, size, linetype and length
+  axis.ticks = element_line(),      # Change ticks line fo all axes
+  axis.ticks.x = element_line(),    # Change x axis ticks only
+  axis.ticks.y = element_line(),    # Change y axis ticks only
+  axis.ticks.length = unit(3, "pt") # Change the length of tick marks
+)

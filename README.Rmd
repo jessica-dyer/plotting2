@@ -35,15 +35,15 @@ You must address the following questions and tasks in your exploratory analysis.
 
 1. Have total emissions from PM2.5 decreased in the United States from 1999 to 2008? Using the base plotting system, make a plot showing the total PM2.5 emission from all sources for each of the years 1999, 2002, 2005, and 2008. 
 
-2. Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (\color{red}{\verb|fips == "24510"|}fips == "24510") from 1999 to 2008? Use the base plotting system to make a plot answering this question. 
+2. Have total emissions from PM2.5 decreased in the Baltimore City, Maryland (fips == "24510") from 1999 to 2008? Use the base plotting system to make a plot answering this question. 
 
-3. Of the four types of sources indicated by the \color{red}{\verb|type|}type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question. 
+3. Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question. 
 
 4. Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?  
 
 5. How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?  
 
-6. Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (\color{red}{\verb|fips == "06037"|}fips == "06037"). Which city has seen greater changes over time in motor vehicle emissions?  
+6. Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips == "06037"). Which city has seen greater changes over time in motor vehicle emissions?  
 
 ***
 
@@ -77,6 +77,7 @@ plot1 <- plot(totalNEI$year, totalNEI$Emissions, type = "b", col = "deepskyblue2
      ylab = expression("Total US "~   PM[2.5] ~ "Emissions"), 
      xlab = "Year", 
      pch = 1)
+
 ```
 
 *** 
@@ -95,27 +96,88 @@ plot2 <- plot(baltimore_plot_data$year, baltimore_plot_data$Emissions,
               ylab = expression("Total US "~   PM[2.5] ~ "Emissions"), 
               xlab = "Year", 
               pch = 1)
+abline(lm(Emissions ~ year, data= baltimore_plot_data), col = "red")
 ```
 
+*** 
+#### Question 3  
+
+3. Of the four types of sources indicated by the type (point, nonpoint, onroad, nonroad) variable, which of these four sources have seen decreases in emissions from 1999–2008 for Baltimore City? Which have seen increases in emissions from 1999–2008? Use the ggplot2 plotting system to make a plot answer this question.
+
+```{r}
+baltimore_plot_data_2 <- aggregate(Emissions ~ year*type, baltimore_df, sum)
+
+plot <- qplot(year, Emissions, data = baltimore_plot_data_2, col = type, facets = .~type, ylab = expression("Total US "~   PM[2.5] ~ "Emissions"), xlab = "Year") + geom_line()
+
+plot + theme(axis.text.x = element_text(angle = 90))
+
+```
+
+***  
+
+#### Question 4  
 
 
+4. Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?
 
+```{r, warning=FALSE}
+scc_subset <- SCC[grepl("coal",SCC$Short.Name, ignore.case = T), ]
+coal_df <- NEI[NEI$SCC %in% scc_subset$SCC, ]
 
+coal_plot_data <- aggregate(Emissions ~ year*type, coal_df, sum)
 
+ggplot(coal_plot_data, aes(year, Emissions, col = type)) +
+      geom_line() +
+      geom_point() +
+      ggtitle(expression("Total US" ~ PM[2.5] ~ "Coal Emission by Type and Year")) +
+      xlab("Year") +
+      ylab(expression("US " ~ PM[2.5] ~ "Coal Emission")) +
+      scale_colour_discrete(name = "Type of sources") +
+      theme(legend.title = element_text(face = "bold"))
+```
 
+***  
 
+#### Question 5  
 
+5. How have emissions from motor vehicle sources changed from 1999–2008 in Baltimore City?  
 
+- NEI onroad sources include emissions from onroad vehicles that use gasoline, diesel, and other fuels. These sources include light duty and heavy duty vehicle emissions from operation on roads, highway ramps, and during idling.
 
+```{r}
+baltimore_auto_df <- filter(NEI, fips == "24510" & type == "ON-ROAD")
 
+baltimore_auto_plot <- aggregate(Emissions ~ year, baltimore_auto_df, sum)
 
+ggplot(baltimore_auto_plot, aes(year, Emissions)) +
+      geom_line() +
+      geom_point() +
+      ggtitle(expression("Total Baltimore" ~ PM[2.5] ~ "Auto Emission by Year")) +
+      xlab("Year") +
+      ylab(expression(~ PM[2.5] ~ "Auto Emission"))
 
+```
 
+***
+#### Question 6  
 
+6. Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle sources in Los Angeles County, California (fips == "06037"). Which city has seen greater changes over time in motor vehicle emissions?  
 
+```{r}
+baltimore_la_df <- subset(NEI, NEI$fips %in% c("24510","06037") & NEI$type == "ON-ROAD")
 
+baltimore_la_plot <- aggregate(Emissions ~ year*fips, baltimore_la_df, sum)
 
+ggplot(baltimore_la_plot, aes(year, Emissions, col = fips)) +
+      geom_line() +
+      geom_point() +
+      ggtitle(expression("Baltimore & Los Angeles" ~ PM[2.5] ~ "Auto Emission by Year")) +
+      xlab("Year") +
+      ylab(expression(~ PM[2.5] ~ "Auto Emission")) + 
+      scale_colour_discrete(name = "City", labels = c("Los Angeles", "Baltimore")) +
+      theme(legend.title = element_text(face = "bold"))
 
+```
 
 
 
